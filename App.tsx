@@ -2,21 +2,27 @@ import {useState} from "react";
 import * as eva from '@eva-design/eva';
 import {ApplicationProvider, Button, Icon, IconRegistry, Layout, Select, SelectItem, Text} from '@ui-kitten/components';
 import {EvaIconsPack} from "@ui-kitten/eva-icons";
+import {DATA} from "./data/data";
 
 
 const HomeScreen = () => {
-
-    const speciesOptions = ['Cattle', 'Buffalo', 'Dog', 'Fowl'];
-    const categoryOptions = ['Physiological Parameters', 'Haematological Parameters', 'Blood Bio Chemical'];
-    const parameterOptions = ['Rectal temperature', 'Respiration Rate', 'Pulse Rate'];
 
     let [speciesSelectedIndex, setSpeciesSelectedIndex] = useState(undefined);
     let [categorySelectedIndex, setCategorySelectedIndex] = useState(undefined);
     let [parameterSelectedIndex, setParameterSelectedIndex] = useState(undefined);
 
+    const speciesOptions = DATA.species.map(data => data.name);
+    const categoryOptions = speciesSelectedIndex ? DATA.species[speciesSelectedIndex-1].categories.map(data => data.name) : [];
+    const parameterOptions = speciesSelectedIndex && categorySelectedIndex  ?
+        DATA.species[speciesSelectedIndex-1].categories
+            .map(data => data.parameters)[categorySelectedIndex-1].map(data => data.name): [];
+
     let speciesSelectedValue = speciesSelectedIndex ? speciesOptions[speciesSelectedIndex.row] : undefined;
     let categorySelectedValue = categorySelectedIndex ? categoryOptions[categorySelectedIndex.row] : undefined;
     let parameterSelectedValue = parameterSelectedIndex ? parameterOptions[parameterSelectedIndex.row] : undefined;
+
+    let finalValue = speciesSelectedIndex && categorySelectedIndex && parameterSelectedIndex ?
+        DATA.species[speciesSelectedIndex-1].categories[categorySelectedIndex-1].parameters[parameterSelectedIndex-1].value: undefined;
 
     const onSpeciesSelect = index => {
         setSpeciesSelectedIndex(index);
@@ -78,8 +84,10 @@ const HomeScreen = () => {
                     {parameterOptions.map(renderOption)}
                 </Select>
 
+                <Text style={{margin: 5}} status='success'>Value : {finalValue}</Text>
+
                 <Button status='primary' style={{margin: 5}} accessoryLeft={SearchIcon}>
-                    PRIMARY
+                    Find Value
                 </Button>
 
             </Layout>
