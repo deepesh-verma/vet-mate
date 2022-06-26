@@ -1,6 +1,17 @@
 import {useState} from "react";
 import * as eva from '@eva-design/eva';
-import {ApplicationProvider, Button, Icon, IconRegistry, Layout, Select, SelectItem, Text} from '@ui-kitten/components';
+import {StyleSheet} from 'react-native';
+import {
+    ApplicationProvider,
+    Avatar,
+    Button,
+    Icon,
+    IconRegistry,
+    Layout,
+    Select,
+    SelectItem,
+    Text
+} from '@ui-kitten/components';
 import {EvaIconsPack} from "@ui-kitten/eva-icons";
 import {DATA} from "./data/data";
 
@@ -12,17 +23,17 @@ const HomeScreen = () => {
     let [parameterSelectedIndex, setParameterSelectedIndex] = useState(undefined);
 
     const speciesOptions = DATA.species.map(data => data.name);
-    const categoryOptions = speciesSelectedIndex ? DATA.species[speciesSelectedIndex-1].categories.map(data => data.name) : [];
-    const parameterOptions = speciesSelectedIndex && categorySelectedIndex  ?
-        DATA.species[speciesSelectedIndex-1].categories
-            .map(data => data.parameters)[categorySelectedIndex-1].map(data => data.name): [];
+    const categoryOptions = speciesSelectedIndex ? DATA.species[speciesSelectedIndex - 1].categories.map(data => data.name) : [];
+    const parameterOptions = speciesSelectedIndex && categorySelectedIndex ?
+        DATA.species[speciesSelectedIndex - 1].categories
+            .map(data => data.parameters)[categorySelectedIndex - 1].map(data => data.name) : [];
 
     let speciesSelectedValue = speciesSelectedIndex ? speciesOptions[speciesSelectedIndex.row] : undefined;
     let categorySelectedValue = categorySelectedIndex ? categoryOptions[categorySelectedIndex.row] : undefined;
     let parameterSelectedValue = parameterSelectedIndex ? parameterOptions[parameterSelectedIndex.row] : undefined;
 
     let finalValue = speciesSelectedIndex && categorySelectedIndex && parameterSelectedIndex ?
-        DATA.species[speciesSelectedIndex-1].categories[categorySelectedIndex-1].parameters[parameterSelectedIndex-1].value: undefined;
+        DATA.species[speciesSelectedIndex - 1].categories[categorySelectedIndex - 1].parameters[parameterSelectedIndex - 1].value : undefined;
 
     const onSpeciesSelect = index => {
         setSpeciesSelectedIndex(index);
@@ -42,23 +53,35 @@ const HomeScreen = () => {
         <SelectItem title={title} key={index}/>
     );
 
-    const SearchIcon = (props) => (
-        <Icon name='search' {...props} />
+    const RefreshIcon = (props) => (
+        <Icon name='refresh-outline' {...props} />
     );
+
+    const resetSelections = () => {
+        setSpeciesSelectedIndex(undefined);
+        setCategorySelectedIndex(undefined);
+        setParameterSelectedIndex(undefined);
+    }
 
 
     return (
 
         <Layout level='1' style={{flex: 1, justifyContent: 'center'}}>
 
-            <Layout level='2' style={{alignItems: 'center', justifyContent: 'center'}}>
-                <Text category='h1'>VetMate</Text>
+            <Layout level='2' style={{flexDirection: 'row', justifyContent: 'space-around'}}>
+                <Layout level='2' style={{flexDirection: 'row'}}>
+                    <Avatar style={styles.avatar} size='giant' source={require('./assets/logo.svg')}/>
+                    <Text category='h1'>VetMate</Text>
+                </Layout>
             </Layout>
 
 
             <Layout level='3'>
 
+                <Text style={styles.text} status='info'>Select options to get the reference value</Text>
+
                 <Select key='species-select'
+                        style={styles.select}
                         placeholder='Select Species'
                         selectedIndex={speciesSelectedIndex}
                         value={speciesSelectedValue}
@@ -67,6 +90,7 @@ const HomeScreen = () => {
                 </Select>
 
                 <Select key='category-select'
+                        style={styles.select}
                         disabled={!speciesSelectedValue}
                         placeholder='Select Category'
                         selectedIndex={categorySelectedIndex}
@@ -76,6 +100,7 @@ const HomeScreen = () => {
                 </Select>
 
                 <Select key='parameter-select'
+                        style={styles.select}
                         disabled={!(speciesSelectedValue && categorySelectedValue)}
                         placeholder='Select Parameter'
                         selectedIndex={parameterSelectedIndex}
@@ -84,11 +109,17 @@ const HomeScreen = () => {
                     {parameterOptions.map(renderOption)}
                 </Select>
 
-                <Text style={{margin: 5}} status='success'>Value : {finalValue}</Text>
+                {finalValue ?
+                    <Text category='label' style={styles.text} status='info'>Value : {finalValue}</Text> : <></>}
 
-                <Button status='primary' style={{margin: 5}} accessoryLeft={SearchIcon}>
-                    Find Value
-                </Button>
+                <Layout style={{flexDirection: 'row', justifyContent: 'space-around'}}>
+
+                    <Button status='primary' style={styles.button} accessoryLeft={RefreshIcon}
+                            onPress={resetSelections}>
+                        Reset
+                    </Button>
+                </Layout>
+
 
             </Layout>
         </Layout>
@@ -104,4 +135,14 @@ export default () => (
         </ApplicationProvider>
     </>
 );
+
+const styles = StyleSheet.create({
+    select: {
+        flex: 1,
+        margin: 2
+    },
+    button: {margin: 5},
+    text: {margin: 5},
+    avatar: {}
+});
 
