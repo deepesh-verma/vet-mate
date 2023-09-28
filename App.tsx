@@ -13,7 +13,6 @@ import {
     Text
 } from '@ui-kitten/components';
 import {EvaIconsPack} from "@ui-kitten/eva-icons";
-import {DATA} from "./data/data";
 
 
 const HomeScreen = () => {
@@ -36,9 +35,9 @@ const HomeScreen = () => {
     }, []);
 
     const speciesOptions = species.map(data => data.name);
-    const categoryOptions = speciesSelectedIndex ? DATA.species[speciesSelectedIndex - 1].categories.map(data => data.name) : [];
+    const categoryOptions = speciesSelectedIndex ? species[speciesSelectedIndex - 1].categories.map(data => data.name) : [];
     const parameterOptions = speciesSelectedIndex && categorySelectedIndex ?
-        DATA.species[speciesSelectedIndex - 1].categories
+        species[speciesSelectedIndex - 1].categories
             .map(data => data.parameters)[categorySelectedIndex - 1].map(data => data.name) : [];
 
     let speciesSelectedValue = speciesSelectedIndex ? speciesOptions[speciesSelectedIndex.row] : undefined;
@@ -46,7 +45,7 @@ const HomeScreen = () => {
     let parameterSelectedValue = parameterSelectedIndex ? parameterOptions[parameterSelectedIndex.row] : undefined;
 
     let finalValue = speciesSelectedIndex && categorySelectedIndex && parameterSelectedIndex ?
-        DATA.species[speciesSelectedIndex - 1].categories[categorySelectedIndex - 1].parameters[parameterSelectedIndex - 1].value : undefined;
+        species[speciesSelectedIndex - 1].categories[categorySelectedIndex - 1].parameters[parameterSelectedIndex - 1].value : undefined;
 
     const onSpeciesSelect = index => {
         setSpeciesSelectedIndex(index);
