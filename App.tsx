@@ -1,4 +1,4 @@
-import {useState} from "react";
+import {useState, useEffect} from "react";
 import * as eva from '@eva-design/eva';
 import {StyleSheet} from 'react-native';
 import {
@@ -21,8 +21,21 @@ const HomeScreen = () => {
     let [speciesSelectedIndex, setSpeciesSelectedIndex] = useState(undefined);
     let [categorySelectedIndex, setCategorySelectedIndex] = useState(undefined);
     let [parameterSelectedIndex, setParameterSelectedIndex] = useState(undefined);
+    const [species, setSpecies] = useState([]);
 
-    const speciesOptions = DATA.species.map(data => data.name);
+    useEffect(() => {
+        fetch('https://api.npoint.io/da923ccbf7de7586179e')
+            .then((res) => res.json())
+            .then((data) => {
+                console.log(data);
+                setSpecies(data);
+            })
+            .catch((err) => {
+                console.log(err.message);
+            });
+    }, []);
+
+    const speciesOptions = species.map(data => data.name);
     const categoryOptions = speciesSelectedIndex ? DATA.species[speciesSelectedIndex - 1].categories.map(data => data.name) : [];
     const parameterOptions = speciesSelectedIndex && categorySelectedIndex ?
         DATA.species[speciesSelectedIndex - 1].categories
